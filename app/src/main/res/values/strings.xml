@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">FootyWorld</string>
+
+    <array name="positions">
+        <item>Goalkeeper</item>
+        <item>Centre Defender</item>
+        <item>Wide Defender</item>
+        <item>Midfielder</item>
+        <item>L. Winger</item>
+        <item>R. Winger</item>
+
+    </array>
+
+    <string name="positionSelect">Please choose your 2 favourite positions</string>
+
+    <string name="selectSquad">Please select the squad you would like teams for</string>
+</resources>
