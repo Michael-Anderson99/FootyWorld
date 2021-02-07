@@ -2,6 +2,8 @@ package com.example.footyworld.Squad;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class Team implements Serializable {
     //String[] gk;
@@ -17,15 +19,19 @@ public class Team implements Serializable {
         this.midfielders = midfielders;
         this.attackers = attackers;
     }
-/*
-    public String[] getGk() {
-        return gk;
+
+    public Team(Team team) {
     }
 
-    public void setGk(String[] gk) {
-        this.gk = gk;
-    }
-*/
+    /*
+        public String[] getGk() {
+            return gk;
+        }
+
+        public void setGk(String[] gk) {
+            this.gk = gk;
+        }
+    */
     public String[] getDefenders() {
         return defenders;
     }

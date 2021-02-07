@@ -79,7 +79,7 @@ public class AlgorithmActivity extends AppCompatActivity {
                 teams = makeTeams(defenders,mids,attackers);
 
                 Intent intent = new Intent(AlgorithmActivity.this, TeamDisplay.class);
-                intent.putExtra("Team1", teams.get(0));
+                intent.putExtra("team", teams);
 
                // intent.putExtra("Team2", teams.get(1));
                 startActivity(intent);
