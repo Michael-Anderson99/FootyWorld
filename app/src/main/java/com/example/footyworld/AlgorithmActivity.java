@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
@@ -35,7 +36,8 @@ public class AlgorithmActivity extends AppCompatActivity {
     List<String> playersFromDb;
     ListView listView;
     ArrayList<Player> arrayList;
-    Button button;
+    Button button, editButton;
+   List<String> remove;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -55,6 +57,7 @@ public class AlgorithmActivity extends AppCompatActivity {
 
         listView = (ListView) findViewById(R.id.listViewTeam1);
         button = findViewById(R.id.SortButton);
+        editButton = findViewById(R.id.EditButton);
 
 
         //Firebase Var
@@ -80,12 +83,36 @@ public class AlgorithmActivity extends AppCompatActivity {
 
                 Intent intent = new Intent(AlgorithmActivity.this, TeamDisplay.class);
                 intent.putExtra("team", teams);
-
                // intent.putExtra("Team2", teams.get(1));
                 startActivity(intent);
-
-
                 System.out.println(g[0] + "line 73" + g[1]);
+            }
+        });
+
+        //incomplete yet. bugs during selecting
+        editButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+                    @Override
+                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                        remove = new ArrayList<>();
+                        String p = adapterView.getItemAtPosition(i).toString();
+                        if(remove.contains(p))
+                        {
+                            view.setBackgroundColor(0);
+                            remove.remove(p);
+                            System.out.println(remove + " Is the list");
+                        }
+                        else
+                        {
+                            view.setBackgroundColor(-16711936);
+                            System.out.println(p + " Was Selected");
+                            remove.add(p);
+                        }
+                        return false;
+                    }
+                });
             }
         });
 
