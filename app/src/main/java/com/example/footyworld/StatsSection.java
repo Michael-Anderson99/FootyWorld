@@ -144,7 +144,7 @@ public class StatsSection extends AppCompatActivity {
     {
         System.out.print("the id is " + id + "////////////////////////////////////////////////////////////");
 
-        System.out.println(statsReference.child(id).setValue(list));
+        statsReference.child(id).setValue(list);
 
     }
 

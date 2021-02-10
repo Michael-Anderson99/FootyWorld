@@ -3,6 +3,7 @@ package com.example.footyworld;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -27,6 +28,8 @@ public class ViewStats extends AppCompatActivity {
     String name;
     String id;
 
+    Statistics s;
+
     DatabaseReference statsReference,userReference;
 
     @Override
@@ -40,7 +43,7 @@ public class ViewStats extends AppCompatActivity {
         savesText = findViewById(R.id.savesTextView);
         b1 = findViewById(R.id.but1);
 
-        statsReference = FirebaseDatabase.getInstance().getReference("statistics");
+        statsReference = FirebaseDatabase.getInstance().getReference("statistics/"+id);
         userReference = FirebaseDatabase.getInstance().getReference("users");
 
 
@@ -50,8 +53,7 @@ public class ViewStats extends AppCompatActivity {
             public void onClick(View view) {
 
                 name = headerText.getText().toString();
-                String id = getUser();
-
+                getUser();
             }
         });
 
@@ -72,6 +74,8 @@ public class ViewStats extends AppCompatActivity {
                     if(user.getUserName().equals(name))
                     {
                         id = user.getUserId();
+                        statsReference = FirebaseDatabase.getInstance().getReference("statistics/"+id);
+                        System.out.println("///////// getUser method " + id);
                         getStats(id);
                     }
                 }
@@ -89,14 +93,17 @@ public class ViewStats extends AppCompatActivity {
 
     public void getStats(final String id)
     {
+        System.out.println("opening get stats " + id);
+        final ArrayList<Statistics> dbStats = new ArrayList<>();
         statsReference.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
                 for(DataSnapshot statsSnapshot: dataSnapshot.getChildren())
                 {
+                    s = statsSnapshot.getValue(Statistics.class);
+                    displayStats(s);
 
-                    //////
                 }
 
             }
@@ -106,6 +113,26 @@ public class ViewStats extends AppCompatActivity {
 
             }
         });
+    }
+
+    public void displayStats(Statistics s)
+    {
+
+        int goals = s.getGoals();
+        int assists = s.getAssists();
+        int saves = s.getSaves();
+        String msg = "Not a Goalkeeper, no saves";
+
+        goalsText.setText(Integer.toString(goals));
+        assistText.setText(Integer.toString(assists));
+        if(saves == 0)
+        {
+            savesText.setText(msg);
+        }
+        else
+        {
+            savesText.setText(Integer.toString(saves));
+        }
 
     }
 
