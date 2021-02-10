@@ -54,6 +54,14 @@ import com.example.footyworld.R;
                     }
                 });
 
+                TextView statsSection = findViewById(R.id.statstab);
+                statsSection.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openStatsActivity();
+                    }
+                });
+
 
 
             }
@@ -79,6 +87,12 @@ import com.example.footyworld.R;
                 Intent intent = new Intent(this, pickTeams.class);
                 startActivity(intent);
 
+            }
+
+            public void openStatsActivity()
+            {
+                Intent intent = new Intent(this, StatsSection.class);
+                startActivity(intent);
             }
 
         }

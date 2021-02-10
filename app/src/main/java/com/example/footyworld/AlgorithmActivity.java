@@ -37,7 +37,7 @@ public class AlgorithmActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<Player> arrayList;
     Button button, editButton;
-   List<String> remove;
+    List<String> remove = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -90,29 +90,11 @@ public class AlgorithmActivity extends AppCompatActivity {
         });
 
         //incomplete yet. bugs during selecting
-        editButton.setOnClickListener(new View.OnClickListener() {
+        editButton.setOnClickListener(new View.OnClickListener()
+        {
             @Override
             public void onClick(View view) {
-                listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-                    @Override
-                    public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                        remove = new ArrayList<>();
-                        String p = adapterView.getItemAtPosition(i).toString();
-                        if(remove.contains(p))
-                        {
-                            view.setBackgroundColor(0);
-                            remove.remove(p);
-                            System.out.println(remove + " Is the list");
-                        }
-                        else
-                        {
-                            view.setBackgroundColor(-16711936);
-                            System.out.println(p + " Was Selected");
-                            remove.add(p);
-                        }
-                        return false;
-                    }
-                });
+                //clickList();
             }
         });
 
@@ -137,7 +119,6 @@ public class AlgorithmActivity extends AppCompatActivity {
             }
         });//end of Squad DB listener
 
-
         databasePlayerList.addValueEventListener(new ValueEventListener()
         {
 
@@ -154,7 +135,7 @@ public class AlgorithmActivity extends AppCompatActivity {
                         playersFromDb.add(p.getPlayerName());
                         arrayList.add(p);
                    }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(AlgorithmActivity.this, android.R.layout.simple_list_item_1, playersFromDb);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<>(AlgorithmActivity.this,android.R.layout.simple_list_item_1, playersFromDb);
                     listView.setAdapter(adapter);
 
                 }
@@ -162,6 +143,18 @@ public class AlgorithmActivity extends AppCompatActivity {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
+                view.setSelected(true);
+                view.setBackgroundColor(-16711936);
+                String s = listView.getItemAtPosition(i).toString();
+                System.out.println(s);
+                remove.add(s);
+                return true;
             }
         });
 

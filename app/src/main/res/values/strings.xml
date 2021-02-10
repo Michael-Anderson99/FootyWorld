@@ -8,8 +8,15 @@
         <item>Midfielder</item>
         <item>L. Winger</item>
         <item>R. Winger</item>
-
     </array>
+
+    <string name="goalstextView">Enter goals here</string>
+    <string name="assiststextView">Enter assists here</string>
+    <string name="savestextView">Enter saves here</string>
+    <string name="gpmtextView">Enter gpm here</string>
+
+
+    <string name="statSectionHeader">Please enter your name and statistics where applicable. Submit when done</string>
 
     <string name="positionSelect">Please choose your 2 favourite positions</string>
 
