@@ -3,6 +3,7 @@ package com.example.footyworld;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -18,6 +19,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
@@ -29,13 +31,15 @@ public class StatsSection extends AppCompatActivity {
 
     TextView UserInput, GoodPlayMomentsInput;
     EditText GoalsInput, AssistsInput, SavesInput;
-    Button submitButton;
+    Button submitButton,searchButton;
 
     User dbUser;
-    String id;
+    public String id;
     int z = 1;
     Statistics madeStats;
     String statsID;
+
+    ArrayList<Statistics> list = new ArrayList<>();
 
 
     @Override
@@ -52,6 +56,7 @@ public class StatsSection extends AppCompatActivity {
         GoodPlayMomentsInput = findViewById(R.id.gpmInput);
         GoodPlayMomentsInput.setText("");
         submitButton = findViewById(R.id.submitButton);
+        searchButton = findViewById(R.id.searchButton);
 
         //database references for connecting to Firebase
         userReference = FirebaseDatabase.getInstance().getReference("users");
@@ -64,15 +69,17 @@ public class StatsSection extends AppCompatActivity {
             {
                 String userName = UserInput.getText().toString();
                 id = getUser(userName);
-
-               madeStats = makeStats(id);
-
-               statsToDB(madeStats);
-               System.out.println(id);
-
             }//end on click
         });//end listener
 
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                Intent intent = new Intent(StatsSection.this, ViewStats.class);
+                startActivity(intent);
+            }
+        });
     }//end oncreate
 
     public String getUser(final String userName)
@@ -91,6 +98,9 @@ public class StatsSection extends AppCompatActivity {
                         id = dbUser.getUserId();
                         System.out.println("I found user " +userName+ ". His ID is " + id);
                         z = 2;
+                        list = makeStats(id);
+                        statsToDB(list);
+
                     }//end if
                 }
 
@@ -108,7 +118,7 @@ public class StatsSection extends AppCompatActivity {
 
     }//end method
 
-    public Statistics makeStats(String d)
+    public ArrayList<Statistics> makeStats(String id)
     {
 
        int g = Integer.parseInt(GoalsInput.getText().toString());
@@ -120,18 +130,21 @@ public class StatsSection extends AppCompatActivity {
         System.out.println("Current time => " + c);
 
        Statistics stats = new Statistics(id, c, g, a, s, gpm);
+       list.add(stats);
        System.out.println("goals " + stats.getGoals());
        System.out.println("assists " + stats.getAssists());
        System.out.println("saves " + stats.getSaves());
        System.out.println("gpm " + stats.getGooodPlayMoments());
+        System.out.println(stats.getUserID()+ "  this is from make stats");
 
-       return stats;
+       return list;
     }
 
-    public void statsToDB(Statistics stats)
+    public void statsToDB(ArrayList<Statistics> stats)
     {
         System.out.print("the id is " + id + "////////////////////////////////////////////////////////////");
-      //  statsReference.child(id).setValue(stats);
+
+        System.out.println(statsReference.child(id).setValue(list));
 
     }
 
