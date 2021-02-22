@@ -39,6 +39,16 @@ public class AlgorithmActivity extends AppCompatActivity {
     Button button, editButton;
     List<String> remove = new ArrayList<>();
 
+    //These Arraylists are used to calculate chemistry
+    ArrayList<String> firstChoiceD = new ArrayList<>();
+    ArrayList<String> secondChoiceD = new ArrayList<>();
+
+    ArrayList<String> firstChoiceM = new ArrayList<>();
+    ArrayList<String> secondChoiceM = new ArrayList<>();
+
+    ArrayList<String> firstChoiceA = new ArrayList<>();
+    ArrayList<String> secondChoiceA = new ArrayList<>();
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -68,6 +78,7 @@ public class AlgorithmActivity extends AppCompatActivity {
         playersFromDb = new ArrayList<>();
         arrayList = new ArrayList<>();
 
+        /*
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view)
@@ -86,6 +97,15 @@ public class AlgorithmActivity extends AppCompatActivity {
                // intent.putExtra("Team2", teams.get(1));
                 startActivity(intent);
                 System.out.println(g[0] + "line 73" + g[1]);
+            }
+        });
+        */ // button w first team pick method
+
+
+        button.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
             }
         });
 
@@ -119,6 +139,7 @@ public class AlgorithmActivity extends AppCompatActivity {
             }
         });//end of Squad DB listener
 
+        //display names
         databasePlayerList.addValueEventListener(new ValueEventListener()
         {
 
@@ -144,9 +165,12 @@ public class AlgorithmActivity extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
+
+
         });
 
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
                 view.setSelected(true);
@@ -157,7 +181,7 @@ public class AlgorithmActivity extends AppCompatActivity {
                 return true;
             }
         });
-
+*/
         squadName.setText(selection);
 
 
@@ -209,10 +233,12 @@ public class AlgorithmActivity extends AppCompatActivity {
             if(p.getPosition1().equals("Centre Defender") || p.getPosition1().equals("Wide Defender"))
             {
                 defenders.add(p.getPlayerName());
+                firstChoiceD.add(p.getPlayerName());
             }
             else if(p.getPosition().equals("Centre Defender") || p.getPosition().equals("Wide Defender"))
             {
                 defenders.add(p.getPlayerName());
+                secondChoiceD.add(p.getPlayerName());
             }
         }
         return defenders;
@@ -227,6 +253,7 @@ public class AlgorithmActivity extends AppCompatActivity {
             if(p.getPosition1().equals("Midfielder") || p.getPosition().equals("Midfielder"))
             {
                 mids.add(p.getPlayerName());
+                firstChoiceM.add(p.getPlayerName());
             }
         }
         return mids;
@@ -243,17 +270,19 @@ public class AlgorithmActivity extends AppCompatActivity {
             if(p.getPosition1().equals("L. Winger") || p.getPosition1().equals("R. Winger"))
             {
                 attackers.add(p.getPlayerName());
+                firstChoiceA.add(p.getPlayerName());
             }
             else if (p.getPosition().equals("L. Winger") || p.getPosition().equals("R. Winger"))
             {
                 attackers.add(p.getPlayerName());
+                secondChoiceA.add(p.getPlayerName());
             }
         }
 
         return attackers;
     }
 
-    public ArrayList<Team> makeTeams(ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
+    /*public ArrayList<Team> makeTeams(ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
     {
         ArrayList<Team> team = new ArrayList<>();
         Team t1 = new Team();
@@ -312,6 +341,43 @@ public class AlgorithmActivity extends AppCompatActivity {
         team.add(t2);
 
         return team;
+    }*/
+
+    public ArrayList<Team> makeTeams(ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
+    {
+        ArrayList<Team> team = new ArrayList<>();
+        Team t1 = new Team();
+        Team t2 = new Team();
+
+        //Defence
+        for(int i=0; i<firstChoiceD.size();i++)
+        {
+
+            if(i%2 == 0)
+            {
+                t1.setChemDefenders1(firstChoiceD.get(i));
+                int chem = t1.getChem();
+                t1.setChem(chem+10);
+            }
+            else
+            {
+                t2.setChemDefenders1(firstChoiceD.get(i));
+                int chem = t2.getChem();
+                t2.setChem(chem + 5);
+            }
+        }
+
+        //Midfield
+        for(int i =0;i<firstChoiceM.size();i++)
+        {
+        }
+
+        //Attack
+        for(int i =0;i<firstChoiceA.size();i++)
+        {
+
+        }
+
     }
 
 }//end of class

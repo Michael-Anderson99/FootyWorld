@@ -39,8 +39,7 @@ public class StatsSection extends AppCompatActivity {
     Statistics madeStats;
     String statsID;
 
-    ArrayList<Statistics> list = new ArrayList<>();
-
+    ArrayList<Statistics> list;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +57,8 @@ public class StatsSection extends AppCompatActivity {
         submitButton = findViewById(R.id.submitButton);
         searchButton = findViewById(R.id.searchButton);
 
+        list = new ArrayList<>();
+
         //database references for connecting to Firebase
         userReference = FirebaseDatabase.getInstance().getReference("users");
         statsReference = FirebaseDatabase.getInstance().getReference("statistics");
@@ -68,7 +69,7 @@ public class StatsSection extends AppCompatActivity {
             public void onClick(View view)
             {
                 String userName = UserInput.getText().toString();
-                id = getUser(userName);
+                getUser(userName);
             }//end on click
         });//end listener
 
@@ -80,9 +81,35 @@ public class StatsSection extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
     }//end oncreate
 
-    public String getUser(final String userName)
+    public void statListInit(final Statistics stats)
+    {
+        list.clear();
+        statsReference.addValueEventListener(new ValueEventListener()
+        {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot)
+            {
+                for(DataSnapshot statsSnapshot : dataSnapshot.getChildren())
+                {
+                    list.add(statsSnapshot.child(id).getValue(Statistics.class));
+                }
+
+            }
+
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+            }
+        });
+        list.add(stats);
+        statsReference.child(id).setValue(list);
+    }
+
+
+    public void getUser(final String userName)
     {
         userReference.addValueEventListener(new ValueEventListener()
         {
@@ -98,9 +125,7 @@ public class StatsSection extends AppCompatActivity {
                         id = dbUser.getUserId();
                         System.out.println("I found user " +userName+ ". His ID is " + id);
                         z = 2;
-                        list = makeStats(id);
-                        statsToDB(list);
-
+                        makeStats();
                     }//end if
                 }
 
@@ -112,44 +137,32 @@ public class StatsSection extends AppCompatActivity {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
             }
-        });//endlistener
 
-        return id;
+        });//endlistener
 
     }//end method
 
-    public ArrayList<Statistics> makeStats(String id)
+    public void makeStats()
     {
-
        int g = Integer.parseInt(GoalsInput.getText().toString());
        int a = Integer.parseInt(AssistsInput.getText().toString());
        int s = Integer.parseInt(SavesInput.getText().toString());
        String gpm = GoodPlayMomentsInput.getText().toString();
 
-        Date c = Calendar.getInstance().getTime();
-        System.out.println("Current time => " + c);
+       Date c = Calendar.getInstance().getTime();
+       System.out.println("Current time => " + c);
 
        Statistics stats = new Statistics(id, c, g, a, s, gpm);
-       list.add(stats);
        System.out.println("goals " + stats.getGoals());
        System.out.println("assists " + stats.getAssists());
        System.out.println("saves " + stats.getSaves());
        System.out.println("gpm " + stats.getGooodPlayMoments());
-        System.out.println(stats.getUserID()+ "  this is from make stats");
+       System.out.println(stats.getUserID()+ "  this is from make stats");
 
-       return list;
-    }
+       statListInit(stats);
 
-    public void statsToDB(ArrayList<Statistics> stats)
-    {
-        System.out.print("the id is " + id + "////////////////////////////////////////////////////////////");
-
-        statsReference.child(id).setValue(list);
 
     }
-
-
-
 
 
 }//end class
