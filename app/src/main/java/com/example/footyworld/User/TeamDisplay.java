@@ -10,6 +10,7 @@ import android.widget.ListView;
 import com.example.footyworld.R;
 import com.example.footyworld.Squad.Team;
 
+import java.io.ObjectInputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,6 +23,7 @@ public class TeamDisplay extends AppCompatActivity {
     List<String> team1 = new ArrayList<>();
     List<String> team2 = new ArrayList<>();
     ArrayList<Team> team;
+    Team teamobj;
     String[] arr1 = new  String[20];
     String[] arr2 = new String[20];
 
@@ -35,16 +37,17 @@ public class TeamDisplay extends AppCompatActivity {
 
         if(b!=null)
         {
-            team = (ArrayList) b.get("team");
+            team = (ArrayList<Team>) b.get("team");
         }
+
 
         listView1 = findViewById(R.id.team1);
         listView2 = findViewById(R.id.team2);
 
         //arr1 left side list view
-        for(int i=0; i<team.get(0).getAttackers().length; i++)
+        for(int i=0; i<team.get(0).getChemAttackers().size(); i++)
         {
-             arr1 = team.get(0).getAttackers();
+             arr1 = team.get(0).getChemAttackers().toArray(arr1);
 
             for(i = 0; i<arr1.length; i++)
             {
@@ -54,9 +57,9 @@ public class TeamDisplay extends AppCompatActivity {
                 }
             }
         }
-        for(int i=0; i<team.get(0).getMidfielders().length; i++)
+        for(int i=0; i<team.get(0).getChemMidfielders().size(); i++)
         {
-            arr1 = team.get(0).getMidfielders();
+            arr1 = (String[]) team.get(0).getChemMidfielders().toArray(arr1);
 
             for(i = 0; i<arr1.length; i++)
             {
@@ -66,9 +69,9 @@ public class TeamDisplay extends AppCompatActivity {
                 }
             }
         }
-        for(int i=0; i<team.get(0).getDefenders().length; i++)
+        for(int i=0; i<team.get(0).getChemDefenders().size(); i++)
         {
-            arr1 = team.get(0).getDefenders();
+            arr1 = (String[]) team.get(0).getChemDefenders().toArray(arr1);
 
             for(i = 0; i<arr1.length; i++)
             {
@@ -78,10 +81,11 @@ public class TeamDisplay extends AppCompatActivity {
                 }
             }
         }
+        team1.add(team.get(0).getGk());
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-        //arr2 right side list view
+        /*arr2 right side list view
         for(int i=0; i<team.get(1).getAttackers().length; i++)
         {
             arr2 = team.get(1).getAttackers();
@@ -119,12 +123,12 @@ public class TeamDisplay extends AppCompatActivity {
             }
         }
 
-
+*/
         ArrayAdapter<String> adapter1 = new ArrayAdapter<String>(TeamDisplay.this, android.R.layout.simple_list_item_1, team1);
-        ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(TeamDisplay.this, android.R.layout.simple_list_item_1, team2);
+       // ArrayAdapter<String> adapter2 = new ArrayAdapter<String>(TeamDisplay.this, android.R.layout.simple_list_item_1, team2);
 
         listView1.setAdapter(adapter1);
-        listView2.setAdapter(adapter2);
+        //listView2.setAdapter(adapter2);
 
 
 

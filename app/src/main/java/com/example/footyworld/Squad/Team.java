@@ -6,23 +6,21 @@ import java.util.Arrays;
 import java.util.List;
 
 public class Team implements Serializable {
-    //String[] gk;
+
+    String gk;
     String[] defenders;
-    String chemDefenders1, defenders2;
+    List<String> chemDefenders;
     String[] midfielders;
-    String chemMidfielders;
+    List<String> chemMidfielders;
     String[] attackers;
-    String chemAttackers;
-
-
-
+    List<String> chemAttackers;
     int chem = 0;
 
 
     public Team(){};
 
-    public Team(String[] defenders, String[] midfielders, String[] attackers) {
-        //this.gk = gk;
+    public Team(String gk, String[] defenders, String[] midfielders, String[] attackers) {
+        this.gk = gk;
         this.defenders = defenders;
         this.midfielders = midfielders;
         this.attackers = attackers;
@@ -41,17 +39,19 @@ public class Team implements Serializable {
         }
     */
 
+    //GOALKEEPERS
+    public String getGk() {
+        return gk;
+    }
+
+    public void setGk(String gk) {
+        this.gk = gk;
+    }
+
+
     //DEFENDERS
     public String[] getDefenders() {
         return defenders;
-    }
-
-    public String getChemDefenders1() {
-        return chemDefenders1;
-    }
-
-    public void setChemDefenders1(String chemDefenders1) {
-        this.chemDefenders1 = chemDefenders1;
     }
 
     public void setDefenders(String[] defenders) {
@@ -59,6 +59,16 @@ public class Team implements Serializable {
         this.defenders = defenders;
 
     }
+
+    public List<String> getChemDefenders() {
+        return chemDefenders;
+    }
+
+    public void setChemDefenders(List<String> chemDefenders) {
+        this.chemDefenders = chemDefenders;
+    }
+
+
 
 
     //MIDFIELDERS
@@ -70,14 +80,13 @@ public class Team implements Serializable {
       this.midfielders = midfielders;
     }
 
-    public String getChemMidfielders() {
+    public List<String> getChemMidfielders() {
         return chemMidfielders;
     }
 
-    public void setChemMidfielders(String chemMidfielders) {
+    public void setChemMidfielders(List<String> chemMidfielders) {
         this.chemMidfielders = chemMidfielders;
     }
-
 
     //ATTACKERS
     public String[] getAttackers() {
@@ -88,13 +97,16 @@ public class Team implements Serializable {
        this.attackers = attackers;
     }
 
-    public String getChemAttackers() {
+    public List<String> getChemAttackers() {
         return chemAttackers;
     }
 
-    public void setChemAttackers(String chemAttackers) {
+    public void setChemAttackers(List<String> chemAttackers) {
         this.chemAttackers = chemAttackers;
     }
+
+
+
 
     //CHEMISTRY
     public int getChem() {

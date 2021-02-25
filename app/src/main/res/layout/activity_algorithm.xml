@@ -9,14 +9,13 @@
 
     <ListView
         android:id="@+id/listViewTeam1"
-        android:layout_width="230dp"
-        android:layout_height="358dp"
+        android:layout_width="225dp"
+        android:layout_height="471dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.497"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.662" />
+        app:layout_constraintVertical_bias="0.569" />
 
     <TextView
         android:id="@+id/textViewTeamName"
@@ -28,7 +27,7 @@
         app:layout_constraintHorizontal_bias="0.498"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.169" />
+        app:layout_constraintVertical_bias="0.096" />
 
     <Button
         android:id="@+id/SortButton"

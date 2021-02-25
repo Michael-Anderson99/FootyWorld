@@ -1,16 +1,28 @@
 package com.example.footyworld;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.footyworld.Squad.Player;
 import com.example.footyworld.Squad.Squad;
@@ -23,6 +35,7 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class AlgorithmActivity extends AppCompatActivity {
@@ -49,6 +62,17 @@ public class AlgorithmActivity extends AppCompatActivity {
     ArrayList<String> firstChoiceA = new ArrayList<>();
     ArrayList<String> secondChoiceA = new ArrayList<>();
 
+    //POPUP
+    private AlertDialog.Builder dlogBuilder;
+    private AlertDialog dlog;
+    private EditText userInput;
+    private Spinner spinner;
+    private Spinner spinner2;
+    private Button addButton;
+
+    //This var will be playerlist ID for the team that was clicked
+    final String[] PLID = new String[1];
+
     @Override
     protected void onCreate(Bundle savedInstanceState)
     {
@@ -58,9 +82,6 @@ public class AlgorithmActivity extends AppCompatActivity {
         //passed data (clicked team)
         final String selection = getIntent().getStringExtra("UserSelection");
 
-       //This var will be playerlist ID for the team that was clicked
-        final String[] PLID = new String[1];
-
         //References for the Layout
         final TextView squadName = findViewById(R.id.textViewTeamName);
         squadName.setText(selection);
@@ -68,7 +89,6 @@ public class AlgorithmActivity extends AppCompatActivity {
         listView = (ListView) findViewById(R.id.listViewTeam1);
         button = findViewById(R.id.SortButton);
         editButton = findViewById(R.id.EditButton);
-
 
         //Firebase Var
         databaseSquads = FirebaseDatabase.getInstance().getReference("squads");
@@ -102,23 +122,37 @@ public class AlgorithmActivity extends AppCompatActivity {
         */ // button w first team pick method
 
 
+        //THIS BUTTON CALLS THE FUNCTION THAT PICKS TEAMS WITH CHEM
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                ArrayList<Team> teams = new ArrayList<>();
+                String[] gk =goalKeeper(arrayList);
+                ArrayList<String> defenders, mids, attackers;
+                defenders = getDefenders(arrayList);
+                mids = getMidfielders(arrayList);
+                attackers = getAttackers(arrayList);
+                teams = makeTeams(gk,defenders,mids,attackers);
 
+
+                Intent intent = new Intent(AlgorithmActivity.this, TeamDisplay.class);
+                intent.putExtra("team", teams);
+                // intent.putExtra("Team2", teams.get(1));
+                startActivity(intent);
             }
         });
 
-        //incomplete yet. bugs during selecting
+        //EDIT LIST BUTTON. REMOVAL HAS BUGS AND IS STILL TO BE CMOPLETED. ALSO CREATES A POPUP WINDOW TO ADD PLAYERS
         editButton.setOnClickListener(new View.OnClickListener()
         {
             @Override
             public void onClick(View view) {
                 //clickList();
+                createNewPlayerPopup();
             }
         });
 
-        //get the playerlist id for selected team
+        //GET THE PLAYERLIST FOR THE SELECTED TEAM
         databaseSquads.addValueEventListener(new ValueEventListener()                                                               //creates a snapshot of the squads db
         {
             @Override
@@ -139,26 +173,25 @@ public class AlgorithmActivity extends AppCompatActivity {
             }
         });//end of Squad DB listener
 
-        //display names
+        //DISPLAY NAMES IN LISTVIEW. Updates everytime playerlist DB is changed
         databasePlayerList.addValueEventListener(new ValueEventListener()
         {
-
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
+                playersFromDb.clear();
                 if( dataSnapshot.child(PLID[0]).getValue() != null )
                 {
                     System.out.println("hello");
                    for( DataSnapshot child : dataSnapshot.child(PLID[0]).getChildren())
                    {
                         Player p = child.getValue(Player.class);
-                        System.out.println(p.getPlayerName()+"line 99");
+                        //System.out.println(p.getPlayerName()+"line 99");
                         playersFromDb.add(p.getPlayerName());
                         arrayList.add(p);
                    }
                     ArrayAdapter<String> adapter = new ArrayAdapter<>(AlgorithmActivity.this,android.R.layout.simple_list_item_1, playersFromDb);
                     listView.setAdapter(adapter);
-
                 }
             }
 
@@ -169,30 +202,76 @@ public class AlgorithmActivity extends AppCompatActivity {
 
         });
 
-        /*listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener()
+        squadName.setText(selection);
+        final ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, playersFromDb)
         {
+            @NonNull
+            @Override
+            public View getView(final int position, final View convertView, @NonNull final ViewGroup parent)
+            {
+                View row = super.getView(position, convertView, parent);
+                row.setBackgroundColor(Color.GREEN);
+                System.out.println("executed");
+                return row;
+            }
+        };
+        
+        listView.setAdapter(adapt);
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                view.setSelected(true);
-                view.setBackgroundColor(-16711936);
-                String s = listView.getItemAtPosition(i).toString();
-                System.out.println(s);
-                remove.add(s);
+                adapt.notifyDataSetChanged();
                 return true;
             }
         });
-*/
-        squadName.setText(selection);
 
 
-    }//end of on create
+    }//END OF ON CREATE
 
+
+
+
+    //popup menu that will allow the user to add a squad to their playerlist
+    public void createNewPlayerPopup()
+    {
+        dlogBuilder = new AlertDialog.Builder(this);
+        final View newPlayerPopup = getLayoutInflater().inflate(R.layout.popup, null);
+        userInput = newPlayerPopup.findViewById(R.id.popupPlayerName);
+        spinner = newPlayerPopup.findViewById(R.id.firstPosition);
+        spinner2 = newPlayerPopup.findViewById(R.id.secondPosition);
+        addButton = newPlayerPopup.findViewById(R.id.addPlayer);
+
+        dlogBuilder.setView(newPlayerPopup);
+        dlog = dlogBuilder.create();
+        dlog.show();
+
+        //when button is clicked, new player object is created and added to database.
+        addButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view)
+            {
+                //take new player data from popup
+                String playerName = userInput.getText().toString().trim();
+                String position1 = spinner.getSelectedItem().toString();
+                String position2 = spinner2.getSelectedItem().toString();
+
+                Player p = new Player(playerName,position1,position2, PLID[0]);
+                arrayList.add(p);
+                databasePlayerList.child(PLID[0]).setValue(arrayList);
+                userInput.setText("");
+                arrayList.clear();
+
+            }
+        });
+    }
+
+    //gets the goalkeeper from the playerlist
     public String[] goalKeeper (ArrayList<Player> players)
     {
         System.out.println("methoddddddddddddddddddddddd");
         String gk1, gk2;
-        String[] keepersFirstChoice = new String[5];
-        String[] keepersSecChoice = new String[5];
+        String[] keepersFirstChoice = new String[10 ];
+        String[] keepersSecChoice = new String[10];
         String[] keepersDecided = new String[2];
         int k = 0;
         int j = 0;
@@ -223,6 +302,7 @@ public class AlgorithmActivity extends AppCompatActivity {
         return keepersDecided;
     }
 
+    //gets defenders from the playerlist first and second choice
     public ArrayList<String> getDefenders(ArrayList<Player> players)
     {
         ArrayList<String> defenders = new ArrayList<>();
@@ -244,21 +324,28 @@ public class AlgorithmActivity extends AppCompatActivity {
         return defenders;
     }
 
+    //gets first and second choice midfielders
     public ArrayList<String> getMidfielders(ArrayList<Player> players)
     {
         ArrayList<String> mids = new ArrayList<>();
         for(int i=0;i<players.size();i++)
         {
             Player p = players.get(i);
-            if(p.getPosition1().equals("Midfielder") || p.getPosition().equals("Midfielder"))
+            if(p.getPosition1().equals("Midfielder") )
             {
                 mids.add(p.getPlayerName());
                 firstChoiceM.add(p.getPlayerName());
+            }
+            else if (p.getPosition().equals("Midfielder"))
+            {
+                mids.add(p.getPlayerName());
+               secondChoiceM.add(p.getPlayerName());
             }
         }
         return mids;
     }
 
+    //gets first and second choice attackers
     public ArrayList<String> getAttackers(ArrayList<Player> players)
     {
         ArrayList<String> attackers = new ArrayList<>();
@@ -343,40 +430,156 @@ public class AlgorithmActivity extends AppCompatActivity {
         return team;
     }*/
 
-    public ArrayList<Team> makeTeams(ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
+    //PICKS TEAMS BASED OFF CHEM
+    public ArrayList<Team> makeTeams(String[] gk, ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
     {
         ArrayList<Team> team = new ArrayList<>();
         Team t1 = new Team();
         Team t2 = new Team();
+        int t1Chem = t1.getChem(), t2Chem = t2.getChem();
+
+        //players who will be defenders in the teams. based off their pref position.
+        List<String> t1Defenders = new ArrayList<>();
+        List<String> t2Defenders = new ArrayList<>();
+
+        List<String> t1Mids = new ArrayList<>();
+        List<String> t2Mids = new ArrayList<>();
+
+        List<String> t1Atts = new ArrayList<>();
+        List<String> t2Atts = new ArrayList<>();
 
         //Defence
-        for(int i=0; i<firstChoiceD.size();i++)
+        // players with defending as pref pos 1
+        if(firstChoiceD.size() > secondChoiceD.size())
         {
+            //Defence || for every defender who picks defending no1, split into two lists to be given back to the teams. each team will get two defenders.
 
-            if(i%2 == 0)
+
+            for(int i=0; i<firstChoiceD.size();i++)
             {
-                t1.setChemDefenders1(firstChoiceD.get(i));
-                int chem = t1.getChem();
-                t1.setChem(chem+10);
+                if(i%2 == 0 && t1Defenders.size() < 2)
+                {
+                    t1Defenders.add(firstChoiceD.get(i));
+
+                }
+                else
+                {
+                    t2Defenders.add(firstChoiceD.get(i));
+
+                }
             }
-            else
+
+            //players with defending as pref pos 2
+            for(int i=0; i<secondChoiceD.size();i++)
             {
-                t2.setChemDefenders1(firstChoiceD.get(i));
-                int chem = t2.getChem();
-                t2.setChem(chem + 5);
+                if(i%2 == 0 && t1Defenders.size() < 2)
+                {
+                    t1Defenders.add(secondChoiceD.get(i));
+
+                }
+                else if(t2Defenders.size()<2)
+                {
+                    t2Defenders.add(secondChoiceD.get(i));
+
+                }
             }
+
+
         }
 
         //Midfield
-        for(int i =0;i<firstChoiceM.size();i++)
+        if(firstChoiceM.size()>secondChoiceM.size())//first choice
         {
+            for(int i =0;i<firstChoiceM.size();i++)
+            {
+                if(i%2 == 0 && t1Mids.size() < 3)
+                {
+                    t1Mids.add(firstChoiceM.get(i));
+
+                }
+                else if (t2Mids.size() < 3)
+                {
+                    t2Mids.add(firstChoiceM.get(i));
+
+                }
+            }
+
+            //second choice
+            for(int i =0;i<secondChoiceM.size();i++)
+            {
+                if(i%2 == 0 && t1Mids.size() < 3)
+                {
+                    t1Mids.add(secondChoiceM.get(i));
+
+                }
+                else if (t2Mids.size() < 3)
+                {
+                    t2Mids.add(secondChoiceM.get(i));
+
+                }
+            }
+
         }
 
         //Attack
-        for(int i =0;i<firstChoiceA.size();i++)
+        if(firstChoiceA.size() > secondChoiceA.size())
         {
+            for(int i =0;i<firstChoiceA.size();i++)
+            {
+                if(i%2==0 && t1Atts.size() < 1)
+                {
+                    t1Atts.add(firstChoiceA.get(i));
+                }
+                else if( t2Atts.size() < 1)
+                {
+                    t2Atts.add(firstChoiceA.get(i));
+                }
 
+            }
         }
+
+        //build Standard formation ----- 1 def | 2 mid | 1 att
+        t1 = buildStandardFormation(gk, t1Defenders,t1Mids,t1Atts);
+        System.out.println(t1.getChemDefenders().toString());
+        team.add(t1);
+
+
+        return team;
+    }
+
+    //ORGANISES TEAM ( right amount of defenders, mids, attackers)
+    public Team buildStandardFormation(String[] gk, List<String> def, List<String> mids, List<String> atts)
+    {
+        List<String> pickedD = new ArrayList<>(5);
+        List<String> pickedM = new ArrayList<>(5);
+        List<String> pickedA = new ArrayList<>(5);
+
+        //1 def 2 mid 1 att.
+        pickedD.add(def.get(0));
+
+        pickedM.add(mids.get(0));
+        pickedM.add(mids.get(1));
+
+        pickedA.add(atts.get(0));
+
+        Team team = new Team();
+        if(gk[0] != null)
+        {
+            team.setGk(gk[0]);
+        }
+        else if(gk[1] != null)
+        {
+            team.setGk(gk[1]);
+        }
+        else
+        {
+            Toast.makeText(this, "NO GOALKEEPER", Toast.LENGTH_LONG).show();
+        }
+        team.setChemDefenders(Collections.singletonList(pickedD.get(0)));
+        team.setChemMidfielders(pickedM);
+        team.setChemAttackers(Collections.singletonList(pickedA.get(0)));
+
+        return team;
 
     }
 
