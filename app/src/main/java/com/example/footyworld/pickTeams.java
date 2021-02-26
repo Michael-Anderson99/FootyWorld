@@ -1,14 +1,19 @@
 package com.example.footyworld;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.footyworld.Squad.Squad;
@@ -50,7 +55,28 @@ public class pickTeams extends AppCompatActivity {
                 {
                     Squad squad = squadsSnapshot.getValue(Squad.class);                                                             //creates a squad object based on position in loop
                     squadsFromDb.add(squad.getSquadName());                                                                                             //adds this squad to  a list of squads that wil populate the screen
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(pickTeams.this, android.R.layout.simple_list_item_1, squadsFromDb);
+                    ArrayAdapter<String> adapter = new ArrayAdapter<String>(pickTeams.this, android.R.layout.simple_list_item_1, squadsFromDb)
+                    {
+                        //overriding get view to keep list layout but change text color
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent){
+                            //get list view item
+                            View view = super.getView(position, convertView, parent);
+
+                            //assign it a textview
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+
+                            // Set color
+                            Color colour = new Color();
+                            colour = Color.valueOf(0, 235, 27);
+
+                            tv.setTextColor(-16711936 );
+
+                            // Generate ListView Item using TextView
+                            return view;
+                        }
+                    };
                     listOfSquads.setAdapter(adapter);
                 }
 

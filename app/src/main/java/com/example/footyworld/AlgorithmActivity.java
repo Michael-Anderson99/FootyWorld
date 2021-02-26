@@ -2,6 +2,7 @@ package com.example.footyworld;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -9,10 +10,12 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -50,6 +53,7 @@ public class AlgorithmActivity extends AppCompatActivity {
     ListView listView;
     ArrayList<Player> arrayList;
     Button button, editButton;
+    Spinner makeTeamsSpinner, editPlayerListSpinner;
     List<String> remove = new ArrayList<>();
 
     //These Arraylists are used to calculate chemistry
@@ -62,13 +66,14 @@ public class AlgorithmActivity extends AppCompatActivity {
     ArrayList<String> firstChoiceA = new ArrayList<>();
     ArrayList<String> secondChoiceA = new ArrayList<>();
 
+
     //POPUP
     private AlertDialog.Builder dlogBuilder;
     private AlertDialog dlog;
     private EditText userInput;
     private Spinner spinner;
     private Spinner spinner2;
-    private Button addButton;
+    private Button addButton,popupDoneButton;
 
     //This var will be playerlist ID for the team that was clicked
     final String[] PLID = new String[1];
@@ -85,10 +90,11 @@ public class AlgorithmActivity extends AppCompatActivity {
         //References for the Layout
         final TextView squadName = findViewById(R.id.textViewTeamName);
         squadName.setText(selection);
-
         listView = (ListView) findViewById(R.id.listViewTeam1);
         button = findViewById(R.id.SortButton);
         editButton = findViewById(R.id.EditButton);
+        makeTeamsSpinner = findViewById(R.id.makeTeamsSpinner);
+        editPlayerListSpinner = findViewById(R.id.editPlayerlistSpinner);
 
         //Firebase Var
         databaseSquads = FirebaseDatabase.getInstance().getReference("squads");
@@ -98,47 +104,38 @@ public class AlgorithmActivity extends AppCompatActivity {
         playersFromDb = new ArrayList<>();
         arrayList = new ArrayList<>();
 
-        /*
-        button.setOnClickListener(new View.OnClickListener() {
+        //THIS BUTTON CALLS THE FUNCTION THAT PICKS TEAMS WITH CHEM
+        button.setOnClickListener(new View.OnClickListener()
+        {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
                 ArrayList<Team> teams = new ArrayList<>();
                 ArrayList<String> defenders, mids, attackers;
                 String[] g = goalKeeper(arrayList);
                 defenders = getDefenders(arrayList);
                 mids = getMidfielders(arrayList);
                 attackers = getAttackers(arrayList);
-
-                teams = makeTeams(defenders,mids,attackers);
-
                 Intent intent = new Intent(AlgorithmActivity.this, TeamDisplay.class);
-                intent.putExtra("team", teams);
-               // intent.putExtra("Team2", teams.get(1));
-                startActivity(intent);
-                System.out.println(g[0] + "line 73" + g[1]);
-            }
-        });
-        */ // button w first team pick method
+                String selection = makeTeamsSpinner.getSelectedItem().toString();
 
+                switch (selection)
+                {
+                    case "Pick Random Teams":
+                        teams = makeTeamsSimpleSplit(g, defenders,mids,attackers);
+                        intent.putExtra("team", teams);
+                        startActivity(intent);
+                        break;
 
-        //THIS BUTTON CALLS THE FUNCTION THAT PICKS TEAMS WITH CHEM
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                ArrayList<Team> teams = new ArrayList<>();
-                String[] gk =goalKeeper(arrayList);
-                ArrayList<String> defenders, mids, attackers;
-                defenders = getDefenders(arrayList);
-                mids = getMidfielders(arrayList);
-                attackers = getAttackers(arrayList);
-                teams = makeTeams(gk,defenders,mids,attackers);
+                    case "Pick Chemistry Based Teams":
+                        teams = makeTeamsChem(g,defenders,mids,attackers);
+                        intent.putExtra("team", teams);
+                        startActivity(intent);
+                        break;
 
-
-                Intent intent = new Intent(AlgorithmActivity.this, TeamDisplay.class);
-                intent.putExtra("team", teams);
-                // intent.putExtra("Team2", teams.get(1));
-                startActivity(intent);
+                    case "Build Standard Formation":
+                        //buildstandardformation
+                        break;
+                }
             }
         });
 
@@ -147,8 +144,15 @@ public class AlgorithmActivity extends AppCompatActivity {
         {
             @Override
             public void onClick(View view) {
-                //clickList();
-                createNewPlayerPopup();
+                String selection = editPlayerListSpinner.getSelectedItem().toString();
+                if(selection.equals("Add A Player"))
+                {
+                    createNewPlayerPopup();
+
+                }else if(selection.equals("Remove A Player"))
+                {
+                    System.out.println("");
+                }
             }
         });
 
@@ -180,20 +184,33 @@ public class AlgorithmActivity extends AppCompatActivity {
             public void onDataChange(@NonNull DataSnapshot dataSnapshot)
             {
                 playersFromDb.clear();
-                if( dataSnapshot.child(PLID[0]).getValue() != null )
-                {
+                if( dataSnapshot.child(PLID[0]).getValue() != null ) {
                     System.out.println("hello");
-                   for( DataSnapshot child : dataSnapshot.child(PLID[0]).getChildren())
-                   {
+                    for (DataSnapshot child : dataSnapshot.child(PLID[0]).getChildren()) {
                         Player p = child.getValue(Player.class);
                         //System.out.println(p.getPlayerName()+"line 99");
                         playersFromDb.add(p.getPlayerName());
                         arrayList.add(p);
-                   }
-                    ArrayAdapter<String> adapter = new ArrayAdapter<>(AlgorithmActivity.this,android.R.layout.simple_list_item_1, playersFromDb);
+                    }
+
+                    final ArrayAdapter<String> adapter = new ArrayAdapter<String>(AlgorithmActivity.this, android.R.layout.simple_list_item_1, playersFromDb) {
+                        //overriding get view to keep list layout but change text color
+                        @RequiresApi(api = Build.VERSION_CODES.O)
+                        @Override
+                        public View getView(int position, View convertView, ViewGroup parent) {
+                            //get list view item
+                            View view = super.getView(position, convertView, parent);
+
+                            TextView tv = (TextView) view.findViewById(android.R.id.text1);
+                            tv.setTextColor(-16711936);
+
+                            return view;
+                        }
+                    };
                     listView.setAdapter(adapter);
                 }
             }
+
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
@@ -202,35 +219,11 @@ public class AlgorithmActivity extends AppCompatActivity {
 
         });
 
+        squadName.setTextColor(-16776961 );
         squadName.setText(selection);
-        final ArrayAdapter<String> adapt = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, playersFromDb)
-        {
-            @NonNull
-            @Override
-            public View getView(final int position, final View convertView, @NonNull final ViewGroup parent)
-            {
-                View row = super.getView(position, convertView, parent);
-                row.setBackgroundColor(Color.GREEN);
-                System.out.println("executed");
-                return row;
-            }
-        };
-        
-        listView.setAdapter(adapt);
-        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
-            @Override
-            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int i, long l) {
-                adapt.notifyDataSetChanged();
-                return true;
-            }
-        });
-
-
     }//END OF ON CREATE
 
-
-
-
+    //METHODS USED IN ACTIVITY
     //popup menu that will allow the user to add a squad to their playerlist
     public void createNewPlayerPopup()
     {
@@ -240,10 +233,16 @@ public class AlgorithmActivity extends AppCompatActivity {
         spinner = newPlayerPopup.findViewById(R.id.firstPosition);
         spinner2 = newPlayerPopup.findViewById(R.id.secondPosition);
         addButton = newPlayerPopup.findViewById(R.id.addPlayer);
+        popupDoneButton = newPlayerPopup.findViewById(R.id.popupFinishedButton);
 
         dlogBuilder.setView(newPlayerPopup);
         dlog = dlogBuilder.create();
         dlog.show();
+        WindowManager.LayoutParams layoutParams = new WindowManager.LayoutParams();
+        layoutParams.copyFrom(dlog.getWindow().getAttributes());
+        layoutParams.width = WindowManager.LayoutParams.MATCH_PARENT;
+        layoutParams.height = WindowManager.LayoutParams.MATCH_PARENT;
+        dlog.getWindow().setAttributes(layoutParams);
 
         //when button is clicked, new player object is created and added to database.
         addButton.setOnClickListener(new View.OnClickListener() {
@@ -260,7 +259,13 @@ public class AlgorithmActivity extends AppCompatActivity {
                 databasePlayerList.child(PLID[0]).setValue(arrayList);
                 userInput.setText("");
                 arrayList.clear();
+            }
+        });
 
+        popupDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dlog.dismiss();
             }
         });
     }
@@ -369,17 +374,33 @@ public class AlgorithmActivity extends AppCompatActivity {
         return attackers;
     }
 
-    /*public ArrayList<Team> makeTeams(ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
+    //Quick team picker. Splits playerlist in half, doesnt try to build efficient team
+    public ArrayList<Team> makeTeamsSimpleSplit(String[] g, ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
     {
         ArrayList<Team> team = new ArrayList<>();
         Team t1 = new Team();
         Team t2 = new Team();
+        String gk1 = "";
+        String gk2 = "";
         String[] def1 = new String[10];
         String[] mid1 = new String[10];
         String[] atts1 = new String[10];
         String[] def2 = new String[10];
         String[] mid2 = new String[10];
         String[] atts2 = new String[10];
+
+
+        for (int i=0; i<g.length;i++)
+        {
+            if(i%2==0)
+            {
+                gk1 = g[i];
+            }
+            else
+            {
+                gk2 = g[i];
+            }
+        }
 
         for(int i=0; i<defenders.size(); i++)
         {
@@ -418,9 +439,26 @@ public class AlgorithmActivity extends AppCompatActivity {
             }
         }
 
+        if(gk1 != null)
+        {
+            if( !gk1.equals(""))
+            {
+                t1.setGk(gk1);
+            }
+        }
+
         t1.setDefenders(def1);
         t1.setMidfielders(mid1);
         t1.setAttackers(atts1);
+
+        if (gk2 != null)
+        {
+            if(!gk1.equals(""))
+            {
+                t2.setGk(gk2);
+            }
+        }
+
         t2.setDefenders(def2);
         t2.setMidfielders(mid2);
         t2.setAttackers(atts2);
@@ -428,10 +466,10 @@ public class AlgorithmActivity extends AppCompatActivity {
         team.add(t2);
 
         return team;
-    }*/
+    }
 
     //PICKS TEAMS BASED OFF CHEM
-    public ArrayList<Team> makeTeams(String[] gk, ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
+    public ArrayList<Team> makeTeamsChem(String[] gk, ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
     {
         ArrayList<Team> team = new ArrayList<>();
         Team t1 = new Team();
@@ -540,9 +578,9 @@ public class AlgorithmActivity extends AppCompatActivity {
 
         //build Standard formation ----- 1 def | 2 mid | 1 att
         t1 = buildStandardFormation(gk, t1Defenders,t1Mids,t1Atts);
-        System.out.println(t1.getChemDefenders().toString());
         team.add(t1);
-
+        t2 = buildStandardFormation(gk, t2Defenders, t2Mids, t2Atts);
+        team.add(t2);
 
         return team;
     }

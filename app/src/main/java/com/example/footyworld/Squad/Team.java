@@ -69,8 +69,6 @@ public class Team implements Serializable {
     }
 
 
-
-
     //MIDFIELDERS
     public String[] getMidfielders() {
         return midfielders;

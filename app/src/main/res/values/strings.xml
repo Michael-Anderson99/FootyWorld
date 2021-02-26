@@ -15,6 +15,17 @@
     <string name="savestextView">Enter saves here</string>
     <string name="gpmtextView">Enter gpm here</string>
 
+    <array name="makeTeamOptions">
+        <item>Pick Random Teams</item>
+        <item>Pick Chemistry Based Teams</item>
+        <!--<item>Build Standard Formation</item> -->
+    </array>
+
+    <array name="editPlayerListOptions">
+        <item>Add A Player</item>
+        <item>Remove A Player</item>
+    </array>
+
 
     <string name="statSectionHeader">Please enter your name and statistics where applicable. Submit when done</string>
 

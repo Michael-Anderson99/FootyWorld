@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/pitch_background"
     tools:context=".pickTeams">
 
     <TextView
@@ -11,26 +12,28 @@
         android:layout_width="323dp"
         android:layout_height="46dp"
         android:text="@string/selectSquad"
+        android:textColor="#EA0303"
         android:textStyle="bold"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.146" />
+        app:layout_constraintVertical_bias="0.093" />
+
 
     <ListView
         android:id="@+id/listForSquads"
-        android:layout_width="287dp"
-        android:layout_height="313dp"
+        android:layout_width="227dp"
+        android:layout_height="305dp"
         android:clickable="true"
         android:focusable="true"
+        android:gravity="center_horizontal"
+        android:textAlignment="center"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.589" />
-
 
     <TextView
         android:id="@+id/textViewSquadName"
