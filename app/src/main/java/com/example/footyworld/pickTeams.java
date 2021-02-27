@@ -71,7 +71,7 @@ public class pickTeams extends AppCompatActivity {
                             Color colour = new Color();
                             colour = Color.valueOf(0, 235, 27);
 
-                            tv.setTextColor(-16711936 );
+                            tv.setTextColor(-16711936);
 
                             // Generate ListView Item using TextView
                             return view;
