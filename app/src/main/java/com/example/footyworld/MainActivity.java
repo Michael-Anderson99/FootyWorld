@@ -54,6 +54,14 @@ import com.example.footyworld.R;
                     }
                 });
 
+                TextView preGame = findViewById(R.id.preGameOrg);
+                preGame.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        openPreGame();
+                    }
+                });
+
                 TextView statsSection = findViewById(R.id.statstab);
                 statsSection.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -88,6 +96,11 @@ import com.example.footyworld.R;
                 startActivity(intent);
 
             }
+            public void openPreGame(){
+                Intent intent = new Intent(this, preGame.class);
+                startActivity(intent);
+
+        }
 
             public void openStatsActivity()
             {

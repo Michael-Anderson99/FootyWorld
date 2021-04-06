@@ -96,8 +96,6 @@ public class StatsSection extends AppCompatActivity {
                                     createStatPopup(userName);
                                 }
                             }
-
-
                         }
                         @Override
                         public void onCancelled(@NonNull DatabaseError databaseError)

@@ -68,7 +68,6 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.403" />
 
-
     <TextView
         android:id="@+id/preGameOrg"
         android:layout_width="280dp"

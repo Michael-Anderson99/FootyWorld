@@ -1,19 +1,18 @@
 package com.example.footyworld.Squad;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
+
 
 public class Team implements Serializable {
 
     String gk;
     String[] defenders;
-    List<String> chemDefenders;
+    List<String> listDefenders;
     String[] midfielders;
-    List<String> chemMidfielders;
+    List<String> listMidfielders;
     String[] attackers;
-    List<String> chemAttackers;
+    List<String> listAttackers;
     int chem = 0;
 
 
@@ -60,12 +59,12 @@ public class Team implements Serializable {
 
     }
 
-    public List<String> getChemDefenders() {
-        return chemDefenders;
+    public List<String> getListDefenders() {
+        return listDefenders;
     }
 
-    public void setChemDefenders(List<String> chemDefenders) {
-        this.chemDefenders = chemDefenders;
+    public void setListDefenders(List<String> listDefenders) {
+        this.listDefenders = listDefenders;
     }
 
 
@@ -78,12 +77,12 @@ public class Team implements Serializable {
       this.midfielders = midfielders;
     }
 
-    public List<String> getChemMidfielders() {
-        return chemMidfielders;
+    public List<String> getListMidfielders() {
+        return listMidfielders;
     }
 
-    public void setChemMidfielders(List<String> chemMidfielders) {
-        this.chemMidfielders = chemMidfielders;
+    public void setListMidfielders(List<String> listMidfielders) {
+        this.listMidfielders = listMidfielders;
     }
 
     //ATTACKERS
@@ -96,11 +95,11 @@ public class Team implements Serializable {
     }
 
     public List<String> getChemAttackers() {
-        return chemAttackers;
+        return listAttackers;
     }
 
-    public void setChemAttackers(List<String> chemAttackers) {
-        this.chemAttackers = chemAttackers;
+    public void setListAttackers(List<String> listAttackers) {
+        this.listAttackers = listAttackers;
     }
 
 

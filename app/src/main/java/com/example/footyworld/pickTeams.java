@@ -48,13 +48,13 @@ public class pickTeams extends AppCompatActivity {
 
         databaseSquads.addValueEventListener(new ValueEventListener()
         {
-                                                                                                                                //listens for data being changed@Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {                                                                       //creates snapshot of the database that has been referenced above
-                squadsFromDb.clear();                                                                                            //makes sure list is empty as data persists and we dont want duplicates
-                for (DataSnapshot squadsSnapshot : dataSnapshot.getChildren())                                                    //loops through snapshot
+                                                                                    //listens for data being changed@Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {          //creates snapshot of the database that has been referenced above
+                squadsFromDb.clear();                                               //makes sure list is empty as data persists and we dont want duplicates
+                for (DataSnapshot squadsSnapshot : dataSnapshot.getChildren())     //loops through snapshot
                 {
-                    Squad squad = squadsSnapshot.getValue(Squad.class);                                                             //creates a squad object based on position in loop
-                    squadsFromDb.add(squad.getSquadName());                                                                                             //adds this squad to  a list of squads that wil populate the screen
+                    Squad squad = squadsSnapshot.getValue(Squad.class);              //creates a squad object based on position in loop
+                    squadsFromDb.add(squad.getSquadName());                          //adds this squad to  a list of squads that wil populate the screen
                     ArrayAdapter<String> adapter = new ArrayAdapter<String>(pickTeams.this, android.R.layout.simple_list_item_1, squadsFromDb)
                     {
                         //overriding get view to keep list layout but change text color

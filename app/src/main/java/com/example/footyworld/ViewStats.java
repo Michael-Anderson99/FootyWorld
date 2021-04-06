@@ -46,8 +46,6 @@ public class ViewStats extends AppCompatActivity {
         statsReference = FirebaseDatabase.getInstance().getReference("statistics/"+id);
         userReference = FirebaseDatabase.getInstance().getReference("users");
 
-
-
         b1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -102,6 +100,7 @@ public class ViewStats extends AppCompatActivity {
                 for(DataSnapshot statsSnapshot: dataSnapshot.getChildren())
                 {
                     s = statsSnapshot.getValue(Statistics.class);
+                    assert s != null;
                     displayStats(s);
 
                 }
@@ -137,3 +136,4 @@ public class ViewStats extends AppCompatActivity {
     }
 
 }
+//

@@ -1,28 +1,20 @@
 package com.example.footyworld;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.widget.AbsListView;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.RelativeLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -125,16 +117,23 @@ public class AlgorithmActivity extends AppCompatActivity {
                         intent.putExtra("team", teams);
                         startActivity(intent);
                         break;
-
+                       /*
                     case "Pick Chemistry Based Teams":
                         teams = makeTeamsChem(g,defenders,mids,attackers);
                         intent.putExtra("team", teams);
                         startActivity(intent);
                         break;
-
+                       */
                     case "Build Standard Formation":
                         //buildstandardformation
                         break;
+
+                    case "Build Defensive Formation":
+                        buildDefensiveFormation(g, defenders,mids,attackers);
+                        break;
+
+                    case "Build Attacking Formation":
+                        buildAttackingFormation(g,defenders,mids,attackers);
                 }
             }
         });
@@ -188,7 +187,6 @@ public class AlgorithmActivity extends AppCompatActivity {
                     System.out.println("hello");
                     for (DataSnapshot child : dataSnapshot.child(PLID[0]).getChildren()) {
                         Player p = child.getValue(Player.class);
-                        //System.out.println(p.getPlayerName()+"line 99");
                         playersFromDb.add(p.getPlayerName());
                         arrayList.add(p);
                     }
@@ -468,7 +466,7 @@ public class AlgorithmActivity extends AppCompatActivity {
         return team;
     }
 
-    //PICKS TEAMS BASED OFF CHEM
+    /*PICKS TEAMS BASED OFF CHEM
     public ArrayList<Team> makeTeamsChem(String[] gk, ArrayList<String> defenders, ArrayList<String> mids, ArrayList<String> attackers)
     {
         ArrayList<Team> team = new ArrayList<>();
@@ -498,12 +496,12 @@ public class AlgorithmActivity extends AppCompatActivity {
                 if(i%2 == 0 && t1Defenders.size() < 2)
                 {
                     t1Defenders.add(firstChoiceD.get(i));
-
+                    t1Chem += 10;
                 }
                 else
                 {
                     t2Defenders.add(firstChoiceD.get(i));
-
+                    t2Chem += 10;
                 }
             }
 
@@ -513,11 +511,13 @@ public class AlgorithmActivity extends AppCompatActivity {
                 if(i%2 == 0 && t1Defenders.size() < 2)
                 {
                     t1Defenders.add(secondChoiceD.get(i));
+                    t1Chem += 5;
 
                 }
                 else if(t2Defenders.size()<2)
                 {
                     t2Defenders.add(secondChoiceD.get(i));
+                    t2Chem += 5;
 
                 }
             }
@@ -584,8 +584,9 @@ public class AlgorithmActivity extends AppCompatActivity {
 
         return team;
     }
+    */
 
-    //ORGANISES TEAM ( right amount of defenders, mids, attackers)
+    //ORGANISES TEAM ( right amount of defenders, mids, attackers) 121
     public Team buildStandardFormation(String[] gk, List<String> def, List<String> mids, List<String> atts)
     {
         List<String> pickedD = new ArrayList<>(5);
@@ -613,13 +614,80 @@ public class AlgorithmActivity extends AppCompatActivity {
         {
             Toast.makeText(this, "NO GOALKEEPER", Toast.LENGTH_LONG).show();
         }
-        team.setChemDefenders(Collections.singletonList(pickedD.get(0)));
-        team.setChemMidfielders(pickedM);
-        team.setChemAttackers(Collections.singletonList(pickedA.get(0)));
+        team.setListDefenders(Collections.singletonList(pickedD.get(0)));
+        team.setListMidfielders(pickedM);
+        team.setListAttackers(Collections.singletonList(pickedA.get(0)));
 
         return team;
 
     }
 
+    //211
+    public Team buildDefensiveFormation(String[] gk, List<String> def, List<String> mids, List<String> atts)
+    {
+        List<String> pickedD = new ArrayList<>(5);
+        List<String> pickedM = new ArrayList<>(5);
+        List<String> pickedA = new ArrayList<>(5);
+
+        //2def 1 mid 1 attatcker
+        pickedD.add(def.get(0));
+        pickedD.add(def.get(1));
+
+        pickedM.add(mids.get(0));
+        pickedA.add(atts.get(1));
+
+        Team team = new Team();
+        if(gk[0] != null)
+        {
+            team.setGk(gk[0]);
+        }
+        else if(gk[1] != null)
+        {
+            team.setGk(gk[1]);
+        }
+        else
+        {
+            Toast.makeText(this, "NO GOALKEEPER", Toast.LENGTH_LONG).show();
+        }
+        team.setListDefenders(pickedD);
+        team.setListMidfielders(pickedM);
+        team.setListAttackers(pickedA);
+
+        return team;
+    }
+
+    //112
+    public Team buildAttackingFormation(String[] gk, List<String> def, List<String> mids, List<String> atts)
+    {
+        List<String> pickedD = new ArrayList<>(5);
+        List<String> pickedM = new ArrayList<>(5);
+        List<String> pickedA = new ArrayList<>(5);
+
+        //1 def 1 mid 2 attacker
+        pickedD.add(def.get(0));
+        pickedM.add(mids.get(0));
+        pickedA.add(mids.get(0));
+        pickedA.add(atts.get(1));
+
+        Team team = new Team();
+        if(gk[0] != null)
+        {
+            team.setGk(gk[0]);
+        }
+        else if(gk[1] != null)
+        {
+            team.setGk(gk[1]);
+        }
+        else
+        {
+            Toast.makeText(this, "NO GOALKEEPER", Toast.LENGTH_LONG).show();
+        }
+        team.setListDefenders(pickedD);
+        team.setListMidfielders(pickedM);
+        team.setListAttackers(pickedA);
+
+
+        return team;
+    }
 }//end of class
 
